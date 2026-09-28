@@ -388,7 +388,7 @@
    Both are safe to have in the page: the database rules
    decide what each visitor can see and change.
    ========================================================= */
-const SUPABASE_URL = "https://bvidualhukgrpiozektw.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://bvidualhukgrpiozektw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_XBw3J5N4bv3BpymDmKqp3Q_cUoiYUO7";
 
 const connected = SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.startsWith("PASTE");
@@ -647,7 +647,7 @@ async function loadRice() {
   if (error) {
     RICE = SAMPLE_RICE;
     const notice = document.getElementById("data-notice");
-    notice.textContent = "Couldn't load the live rice list, so this is the sample list. Check the Supabase URL and key.";
+    notice.textContent = "Couldn't load the live rice list, so this is the sample list. Supabase said: " + error.message;
     notice.hidden = false;
     return;
   }
