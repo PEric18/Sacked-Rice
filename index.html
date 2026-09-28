@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sacked – Rice by the bag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Colour tokens ---------- */
+  :root {
+    --page: #F6F6F1;
+    --card: #FFFFFF;
+    --ink: #1D1B17;
+    --muted: #5E5A52;
+    --line: #DAD6CC;
+    --stamp: #1F3A68;      /* sack-stamp blue */
+    --price: #A6281F;      /* sack-stamp red */
+    --jute: #C8A874;
+    --jute-dark: #9E8150;
+
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #191814;
+      --card: #23211C;
+      --ink: #EFEBE2;
+      --muted: #ABA597;
+      --line: #3A372F;
+      --stamp: #8FB0E6;
+      --price: #F08A7E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #191814;
+    --card: #23211C;
+    --ink: #EFEBE2;
+    --muted: #ABA597;
+    --line: #3A372F;
+    --stamp: #8FB0E6;
+    --price: #F08A7E;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: inherit; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  img { max-width: 100%; }
+
+  /* ---------- Hero: a strip of hessian with the stencilled name ---------- */
+  .hero {
+    background-color: var(--jute);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(90,65,30,.18) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(90,65,30,.14) 0 1px, transparent 1px 4px);
+    color: #2A2218;
+    padding: clamp(2.5rem, 7vw, 5rem) 1.25rem clamp(2rem, 5vw, 3.5rem);
+  }
+  .hero-inner { max-width: 70rem; margin: 0 auto; }
+  .wordmark {
+    font-family: "Stardos Stencil", "Courier New", monospace;
+    font-weight: 700;
+    font-size: clamp(4rem, 16vw, 10rem);
+    line-height: .85;
+    letter-spacing: .04em;
+    margin: 0;
+    color: #1F3A68;
+    mix-blend-mode: multiply;
+  }
+  .tagline {
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    font-weight: 600;
+    margin: 1.25rem 0 .4rem;
+  }
+  .intro { max-width: 36rem; margin: 0; }
+
+  /* ---------- Sections ---------- */
+  main { max-width: 70rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+  section { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  section > h2 {
+    font-family: "Stardos Stencil", "Courier New", monospace;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    margin: 0;
+    color: var(--stamp);
+  }
+  .section-note { color: var(--muted); margin: .35rem 0 1.5rem; max-width: 40rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ---------- Card: a rice-sack label ---------- */
+  .rice {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+  }
+  .rice-photo { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px 3px 0 0; }
+  .rice-photo svg, .rice-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .label {
+    position: relative;
+    padding: 1.4rem 1.25rem 1.3rem;
+    border-top: 2px dashed var(--jute-dark);   /* the sack's stitching */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .origin {
+    align-self: flex-start;
+    font-family: "Stardos Stencil", "Courier New", monospace;
+    font-size: .95rem;
+    color: var(--stamp);
+    border: 2px solid var(--stamp);
+    padding: .1rem .5rem;
+    transform: rotate(-2.5deg);
+    opacity: .9;
+    margin-bottom: .75rem;
+  }
+  .rice h3 { font-size: 1.25rem; line-height: 1.25; margin: 0 0 .5rem; }
+  .price-row { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .8rem; }
+  .price { font-size: 1.5rem; font-weight: 600; color: var(--price); }
+  .pack { color: var(--muted); font-size: .9rem; }
+  .blurb { margin: 0 0 1rem; }
+
+  .facts { margin: auto 0 0; display: grid; grid-template-columns: auto 1fr; gap: .3rem .9rem; font-size: .92rem; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; }
+
+  /* ---------- "Help me choose" panel ---------- */
+  .chooser {
+    margin-top: clamp(2rem, 5vw, 3rem);
+    background: var(--card);
+    border: 2px dashed var(--jute-dark);
+    border-radius: 3px;
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+  .chooser h2 {
+    font-family: "Stardos Stencil", "Courier New", monospace;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--stamp);
+    margin: 0;
+  }
+  .chooser > p { color: var(--muted); margin: .3rem 0 1.25rem; }
+  .questions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+    gap: 1rem 1.25rem;
+  }
+  .questions label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: .35rem; }
+  .questions select {
+    width: 100%;
+    font: inherit;
+    font-size: .95rem;
+    color: var(--ink);
+    background-color: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: .55rem 2.2rem .55rem .7rem;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                      linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 1.1rem) 50%, calc(100% - .75rem) 50%;
+    background-size: .35rem .35rem;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+  .questions select:focus-visible, .clear:focus-visible {
+    outline: 3px solid var(--stamp);
+    outline-offset: 2px;
+  }
+  .result-bar {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    gap: .75rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line);
+  }
+  .result { font-weight: 600; margin: 0; }
+  .clear {
+    font: inherit; font-size: .95rem; font-weight: 600;
+    color: var(--stamp); background: none;
+    border: 2px solid var(--stamp); border-radius: 3px;
+    padding: .4rem .9rem; cursor: pointer;
+  }
+  .clear:disabled { opacity: .4; cursor: default; }
+  .empty {
+    border: 1px solid var(--line); border-radius: 3px; background: var(--card);
+    padding: 1.5rem 1.25rem; margin-top: 2.5rem;
+  }
+  .empty strong { display: block; font-size: 1.1rem; margin-bottom: .25rem; }
+  .empty p { margin: 0; color: var(--muted); }
+  [hidden] { display: none !important; }
+
+  /* ---------- Admin ---------- */
+  .admin-bar {
+    background: var(--stamp); color: #fff;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+    padding: .6rem 1.25rem; font-size: .95rem;
+  }
+  :root[data-theme="dark"] .admin-bar { color: #111; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .admin-bar { color: #111; } }
+  .admin-bar button, .link-button {
+    font: inherit; background: none; border: 0; padding: 0; cursor: pointer;
+    color: inherit; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .admin-panel {
+    margin-top: 1.1rem; padding-top: 1rem; border-top: 2px solid var(--stamp);
+  }
+  .admin-panel .admin-title { font-weight: 600; color: var(--stamp); margin: 0 0 .6rem; font-size: .92rem; }
+  .admin-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .admin-fields label { font-size: .88rem; color: var(--muted); display: block; }
+  .admin-fields input {
+    display: block; width: 100%; margin-top: .25rem;
+    font: inherit; font-size: 1rem; color: var(--ink); background: var(--page);
+    border: 1px solid var(--line); border-radius: 3px; padding: .45rem .55rem;
+  }
+  .stock-note { font-size: .85rem; margin: .5rem 0 0; color: var(--price); font-weight: 600; }
+  .save-row { display: flex; align-items: center; gap: .75rem; margin-top: .8rem; flex-wrap: wrap; }
+  .save, .dialog-actions button {
+    font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer;
+    background: var(--stamp); color: var(--card); border: 2px solid var(--stamp);
+    border-radius: 3px; padding: .45rem 1rem;
+  }
+  .save:disabled { opacity: .5; cursor: default; }
+  .save-status { font-size: .9rem; color: var(--muted); }
+  .admin-fields input:focus-visible, .save:focus-visible, .link-button:focus-visible,
+  .admin-bar button:focus-visible, dialog input:focus-visible, dialog button:focus-visible {
+    outline: 3px solid var(--stamp); outline-offset: 2px;
+  }
+  dialog {
+    border: 1px solid var(--line); border-radius: 3px; background: var(--card); color: var(--ink);
+    padding: 1.5rem; width: min(24rem, calc(100% - 2rem));
+  }
+  dialog::backdrop { background: rgba(20, 16, 10, .55); }
+  dialog h2 { font-family: "Stardos Stencil", "Courier New", monospace; color: var(--stamp); margin: 0 0 1rem; }
+  dialog label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: .9rem; }
+  dialog input {
+    display: block; width: 100%; margin-top: .3rem; font: inherit; color: var(--ink);
+    background: var(--page); border: 1px solid var(--line); border-radius: 3px; padding: .55rem .65rem;
+  }
+  .dialog-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+  .dialog-actions .cancel { background: none; color: var(--stamp); }
+  .form-error { color: var(--price); font-size: .92rem; margin: 0 0 .75rem; }
+  .notice { color: var(--muted); font-size: .9rem; margin: .5rem 0 0; }
+
+  footer {
+    max-width: 70rem; margin: 0 auto; padding: 1.5rem 1.25rem 2.5rem;
+    border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="admin-bar" id="admin-bar" hidden>
+  <span>You're signed in as admin. Changes save straight to the shop.</span>
+  <button type="button" id="sign-out">Sign out</button>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1 class="wordmark">SACKED</h1>
+    <p class="tagline">Good rice, by the bag.</p>
+    <p class="intro">Six rices we like, from everyday staples to small-batch heirlooms. Each one tells you where it's grown, how it cooks and what to make with it.</p>
+  </div>
+</header>
+
+<main>
+  <div class="chooser" role="search" aria-labelledby="h-choose">
+    <h2 id="h-choose">Help me choose</h2>
+    <p>Answer any of these and we'll show the rices that fit. Leave one on “Any” if you're not fussed.</p>
+
+    <div class="questions">
+      <div>
+        <label for="q-dish">What are you cooking?</label>
+        <select id="q-dish">
+          <option value="">Any</option>
+          <option value="curry">Curry</option>
+          <option value="stirfry">Stir-fry or fried rice</option>
+          <option value="sushi">Sushi or rice balls</option>
+          <option value="biryani">Biryani or pilaf</option>
+          <option value="paella">Paella or baked rice</option>
+          <option value="salad">Salad or grain bowl</option>
+          <option value="dessert">Dessert</option>
+          <option value="everyday">Just everyday rice</option>
+        </select>
+      </div>
+      <div>
+        <label for="q-texture">How do you like it to eat?</label>
+        <select id="q-texture">
+          <option value="">Any</option>
+          <option value="soft">Soft and a little sticky</option>
+          <option value="separate">Light, every grain separate</option>
+          <option value="chewy">Chewy with some bite</option>
+          <option value="firm">Firm, holds its shape</option>
+        </select>
+      </div>
+      <div>
+        <label for="q-flavour">What flavour are you after?</label>
+        <select id="q-flavour">
+          <option value="">Any</option>
+          <option value="fragrant">Fragrant</option>
+          <option value="mild">Mild, lets the dish shine</option>
+          <option value="nutty">Nutty or earthy</option>
+        </select>
+      </div>
+      <div>
+        <label for="q-type">White or wholegrain?</label>
+        <select id="q-type">
+          <option value="">Any</option>
+          <option value="white">White</option>
+          <option value="wholegrain">Wholegrain (bran left on)</option>
+        </select>
+      </div>
+      <div>
+        <label for="q-budget">What's your budget?</label>
+        <select id="q-budget">
+          <option value="">Any</option>
+          <option value="cheap">Keep it cheap (under $5 a kilo)</option>
+          <option value="treat">Something special (over $10 a kilo)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="result-bar">
+      <p class="result" id="result" aria-live="polite">Showing all 6 rices</p>
+      <button class="clear" id="clear" type="button" disabled>Clear answers</button>
+    </div>
+  </div>
+
+  <div class="empty" id="empty" hidden>
+    <strong>No rice ticks every box</strong>
+    <p>Try setting one of your answers back to “Any”, or clear them all to see the full range.</p>
+  </div>
+
+  <section aria-labelledby="h-grocery">
+    <h2 id="h-grocery">Everyday staples</h2>
+    <p class="section-note">The rices you'll find at the big grocers, and the ones most kitchens run on.</p>
+    <div class="grid" id="grocery"></div>
+  </section>
+
+  <section aria-labelledby="h-boutique">
+    <h2 id="h-boutique">Small-batch &amp; heirloom</h2>
+    <p class="section-note">Rarer grains from small growers and specialty sellers, with more character in the pot.</p>
+    <div class="grid" id="boutique"></div>
+  </section>
+</main>
+
+<footer>
+  Sacked is a practice project. Prices are samples in AUD.
+  <p class="notice" id="data-notice" hidden>Showing the sample list. Add your Supabase details to the page to load the live one.</p>
+  <p><button type="button" class="link-button" id="admin-link">Admin sign in</button></p>
+</footer>
+
+<dialog id="login">
+  <form id="login-form" method="dialog">
+    <h2>Admin sign in</h2>
+    <p class="form-error" id="login-error" hidden></p>
+    <label>Email <input type="email" id="login-email" autocomplete="username" required></label>
+    <label>Password <input type="password" id="login-password" autocomplete="current-password" required></label>
+    <div class="dialog-actions">
+      <button type="submit" id="login-submit">Sign in</button>
+      <button type="button" class="cancel" id="login-cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Supabase's JavaScript library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<script>
+/* =========================================================
+   YOUR SUPABASE DETAILS
+   Paste your Project URL and publishable (anon) key here.
+   Both are safe to have in the page: the database rules
+   decide what each visitor can see and change.
+   ========================================================= */
+const SUPABASE_URL = "https://bvidualhukgrpiozektw.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_XBw3J5N4bv3BpymDmKqp3Q_cUoiYUO7";
+
+const connected = SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.startsWith("PASTE");
+const db = connected && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+/* Sample list, used only until Supabase is connected */
+const SAMPLE_RICE = [
+  {
+    id: 1,
+    source: "grocery",
+    name: "Thai Hom Mali jasmine",
+    origin: "Thailand",
+    price: 7.50, pack_kg: 2,
+    blurb: "Grown mostly in Thailand's northeast, where the dry-season finish brings out its famous aroma. The long grains cook up soft and a little clingy.",
+    texture: "Soft, fluffy, slightly sticky",
+    flavour: "Floral and faintly sweet",
+    best_for: "Thai curries, stir-fries",
+    grain: "long", colour: "#F4F1E6",
+    dishes: ["curry","stirfry","everyday"], texture_type: ["soft"], flavour_type: ["fragrant"], wholegrain: false,
+    image_url: ""
+  },
+  {
+    id: 2,
+    source: "grocery",
+    name: "Aged basmati",
+    origin: "India & Pakistan",
+    price: 8.90, pack_kg: 2,
+    blurb: "From the plains below the Himalayas. Ageing the grain dries it out, so it stretches to nearly twice its length and stays in separate strands.",
+    texture: "Dry, light, separate grains",
+    flavour: "Nutty, like popcorn",
+    best_for: "Biryani, pilaf, dal",
+    grain: "extralong", colour: "#EFE5CB",
+    dishes: ["curry","biryani","everyday"], texture_type: ["separate"], flavour_type: ["fragrant","nutty"], wholegrain: false,
+    image_url: ""
+  },
+  {
+    id: 3,
+    source: "grocery",
+    name: "Calrose medium grain",
+    origin: "Riverina, NSW",
+    price: 5.50, pack_kg: 2,
+    blurb: "The workhorse of Australian kitchens, grown in the Murrumbidgee irrigation country. It's forgiving to cook and holds together well.",
+    texture: "Soft, tender, clumps lightly",
+    flavour: "Clean and mild",
+    best_for: "Everyday meals, fried rice, home sushi",
+    grain: "medium", colour: "#F7F4EC",
+    dishes: ["stirfry","sushi","everyday"], texture_type: ["soft"], flavour_type: ["mild"], wholegrain: false,
+    image_url: ""
+  },
+  {
+    id: 4,
+    source: "boutique",
+    name: "Kurulu Thuda red rice",
+    origin: "Sri Lanka",
+    price: 11.50, pack_kg: 0.9,
+    blurb: "An old Sri Lankan variety whose name refers to a bird's beak, after the grain's slim pointed shape. The red bran is left on.",
+    texture: "Firm and chewy",
+    flavour: "Nutty and earthy",
+    best_for: "Curries, grain salads",
+    grain: "long", colour: "#9A3A2C",
+    dishes: ["curry","salad"], texture_type: ["chewy"], flavour_type: ["nutty"], wholegrain: true,
+    image_url: ""
+  },
+  {
+    id: 5,
+    source: "boutique",
+    name: "Black “forbidden” rice",
+    origin: "China",
+    price: 12.00, pack_kg: 1,
+    blurb: "Once kept for the imperial table, hence the nickname. The dark bran turns the cooking water, and the rice, a deep purple.",
+    texture: "Chewy with a bit of bite",
+    flavour: "Earthy, lightly sweet",
+    best_for: "Grain bowls, salads, rice pudding",
+    grain: "medium", colour: "#2B1F2E",
+    dishes: ["salad","dessert"], texture_type: ["chewy"], flavour_type: ["nutty"], wholegrain: true,
+    image_url: ""
+  },
+  {
+    id: 6,
+    source: "boutique",
+    name: "Bomba",
+    origin: "Calasparra, Spain",
+    price: 14.50, pack_kg: 1,
+    blurb: "A small, round Spanish grain grown along mountain rivers in Murcia. It soaks up about three times its volume in stock without going mushy.",
+    texture: "Firm, keeps its shape",
+    flavour: "Mild, carries other flavours",
+    best_for: "Paella, baked rice",
+    grain: "round", colour: "#F1ECDF",
+    dishes: ["paella"], texture_type: ["firm"], flavour_type: ["mild"], wholegrain: false,
+    image_url: ""
+  }
+];
+
+let RICE = [];          // the rice list the page shows
+let STOCK = {};         // rice id -> bags in stock (only filled in for admins)
+let isAdmin = false;
+
+/* ---------- Placeholder "photo": grains scattered on hessian ---------- */
+const GRAIN_SIZES = {
+  extralong: [13, 2.6], long: [10.5, 3], medium: [8, 3.6], round: [5.8, 4.6]
+};
+
+function seededRandom(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function shade(hex, amount) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v + amount))));
+  return "#" + c.map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
+function grainPicture(rice, index) {
+  const rand = seededRandom(index * 977 + 13);
+  const [rx, ry] = GRAIN_SIZES[rice.grain];
+  const dark = parseInt(rice.colour.slice(1, 3), 16) < 100;
+  let grains = "";
+  for (let i = 0; i < 150; i++) {
+    const angle = rand() * Math.PI * 2;
+    const dist = Math.pow(rand(), 0.7);
+    const x = 200 + Math.cos(angle) * dist * 150;
+    const y = 158 + Math.sin(angle) * dist * 95;
+    const rot = Math.round(rand() * 180);
+    const fill = shade(rice.colour, (rand() - 0.5) * (dark ? 30 : 18));
+    const edge = dark ? shade(rice.colour, 45) : shade(rice.colour, -40);
+    grains += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${fill}" stroke="${edge}" stroke-width=".6"/>`;
+  }
+  return `
+  <svg viewBox="0 0 400 300" role="img" aria-label="Illustration of ${rice.name} grains">
+    <defs>
+      <pattern id="weave${index}" width="6" height="6" patternUnits="userSpaceOnUse">
+        <rect width="6" height="6" fill="#C8A874"/>
+        <path d="M0 1.5H6M0 4.5H6" stroke="#B08E58" stroke-width="1.2"/>
+        <path d="M1.5 0V6M4.5 0V6" stroke="#D6BA88" stroke-width=".8"/>
+      </pattern>
+      <radialGradient id="shadow${index}">
+        <stop offset="0" stop-color="#5A4120" stop-opacity=".35"/>
+        <stop offset="1" stop-color="#5A4120" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="400" height="300" fill="url(#weave${index})"/>
+    <ellipse cx="200" cy="168" rx="175" ry="112" fill="url(#shadow${index})"/>
+    ${grains}
+  </svg>`;
+}
+
+/* ---------- Build one card ---------- */
+function card(rice) {
+  const perKg = (rice.price / rice.pack_kg).toFixed(2);
+  const packLabel = rice.pack_kg < 1 ? `${Math.round(rice.pack_kg * 1000)} g bag` : `${rice.pack_kg} kg bag`;
+  const picture = rice.image_url
+    ? `<img src="${rice.image_url}" alt="${rice.name}">`
+    : grainPicture(rice, rice.id);
+
+  return `
+  <article class="rice">
+    <div class="rice-photo">${picture}</div>
+    <div class="label">
+      <span class="origin">${rice.origin}</span>
+      <h3>${rice.name}</h3>
+      <div class="price-row">
+        <span class="price">$${rice.price.toFixed(2)}</span>
+        <span class="pack">${packLabel}, $${perKg}/kg</span>
+      </div>
+      <p class="blurb">${rice.blurb}</p>
+      <dl class="facts">
+        <dt>Texture</dt><dd>${rice.texture}</dd>
+        <dt>Flavour</dt><dd>${rice.flavour}</dd>
+        <dt>Best for</dt><dd>${rice.best_for}</dd>
+      </dl>
+      ${isAdmin ? adminPanel(rice) : ""}
+    </div>
+  </article>`;
+}
+
+/* ---------- The extra panel only you see ---------- */
+function adminPanel(rice) {
+  const stock = STOCK[rice.id] ?? 0;
+  let note = "";
+  if (stock === 0) note = `<p class="stock-note">Out of stock</p>`;
+  else if (stock < 5) note = `<p class="stock-note">Running low</p>`;
+  return `
+  <div class="admin-panel">
+    <p class="admin-title">Admin</p>
+    <div class="admin-fields">
+      <label>Price ($)
+        <input type="number" min="0" step="0.05" value="${rice.price.toFixed(2)}" id="price-${rice.id}">
+      </label>
+      <label>Stock (bags)
+        <input type="number" min="0" step="1" value="${stock}" id="stock-${rice.id}">
+      </label>
+    </div>
+    ${note}
+    <div class="save-row">
+      <button type="button" class="save" data-id="${rice.id}">Save changes</button>
+      <span class="save-status" id="status-${rice.id}" aria-live="polite"></span>
+    </div>
+  </div>`;
+}
+
+/* ---------- Put the cards on the page ---------- */
+function render(list) {
+  const grocery = list.filter(r => r.source === "grocery");
+  const boutique = list.filter(r => r.source === "boutique");
+  document.getElementById("grocery").innerHTML = grocery.map(card).join("");
+  document.getElementById("boutique").innerHTML = boutique.map(card).join("");
+  document.getElementById("grocery").closest("section").hidden = grocery.length === 0;
+  document.getElementById("boutique").closest("section").hidden = boutique.length === 0;
+  document.getElementById("empty").hidden = list.length > 0;
+}
+
+/* ---------- "Help me choose" ---------- */
+const questions = {
+  dish:    { el: document.getElementById("q-dish"),    fits: (r, v) => r.dishes.includes(v) },
+  texture: { el: document.getElementById("q-texture"), fits: (r, v) => r.texture_type.includes(v) },
+  flavour: { el: document.getElementById("q-flavour"), fits: (r, v) => r.flavour_type.includes(v) },
+  type:    { el: document.getElementById("q-type"),    fits: (r, v) => r.wholegrain === (v === "wholegrain") },
+  budget:  { el: document.getElementById("q-budget"),  fits: (r, v) => {
+    const perKg = r.price / r.pack_kg;
+    return v === "cheap" ? perKg < 5 : perKg > 10;
+  }}
+};
+
+function update() {
+  const answered = Object.values(questions).filter(q => q.el.value !== "");
+  const matches = RICE.filter(r => answered.every(q => q.fits(r, q.el.value)));
+  render(matches);
+
+  const result = document.getElementById("result");
+  if (answered.length === 0) result.textContent = `Showing all ${RICE.length} rices`;
+  else if (matches.length === 0) result.textContent = "No matches yet";
+  else result.textContent = matches.length === 1 ? "1 rice fits your answers" : `${matches.length} rices fit your answers`;
+
+  document.getElementById("clear").disabled = answered.length === 0;
+}
+
+Object.values(questions).forEach(q => q.el.addEventListener("change", update));
+document.getElementById("clear").addEventListener("click", () => {
+  Object.values(questions).forEach(q => { q.el.value = ""; });
+  update();
+});
+
+/* ---------- Load the rice list ---------- */
+async function loadRice() {
+  if (!db) {
+    RICE = SAMPLE_RICE;
+    document.getElementById("data-notice").hidden = false;
+    return;
+  }
+  const { data, error } = await db.from("rice").select("*").order("sort_order");
+  if (error) {
+    RICE = SAMPLE_RICE;
+    const notice = document.getElementById("data-notice");
+    notice.textContent = "Couldn't load the live rice list, so this is the sample list. Check the Supabase URL and key.";
+    notice.hidden = false;
+    return;
+  }
+  RICE = data.map(r => ({ ...r, price: Number(r.price), pack_kg: Number(r.pack_kg) }));
+}
+
+/* ---------- Admin: check who's signed in and load stock ---------- */
+async function checkAdmin() {
+  isAdmin = false;
+  STOCK = {};
+  if (!db) return;
+  const { data: session } = await db.auth.getSession();
+  if (!session.session) return;
+
+  const { data: admin } = await db.rpc("is_admin");
+  if (!admin) return;
+
+  const { data: rows } = await db.from("rice_admin").select("rice_id, stock_bags");
+  (rows || []).forEach(row => { STOCK[row.rice_id] = row.stock_bags; });
+  isAdmin = true;
+}
+
+function showAdminUI() {
+  document.getElementById("admin-bar").hidden = !isAdmin;
+  document.getElementById("admin-link").hidden = isAdmin;
+}
+
+/* ---------- Saving price and stock ---------- */
+document.querySelector("main").addEventListener("click", async (event) => {
+  const button = event.target.closest(".save");
+  if (!button) return;
+
+  const id = Number(button.dataset.id);
+  const status = document.getElementById(`status-${id}`);
+  const price = Number(document.getElementById(`price-${id}`).value);
+  const stock = Number(document.getElementById(`stock-${id}`).value);
+
+  if (!(price > 0)) { status.textContent = "Enter a price above $0."; return; }
+  if (!Number.isInteger(stock) || stock < 0) { status.textContent = "Stock must be a whole number, 0 or more."; return; }
+
+  button.disabled = true;
+  status.textContent = "Saving…";
+
+  const priceSave = await db.from("rice").update({ price }).eq("id", id).select();
+  const stockSave = await db.from("rice_admin")
+    .upsert({ rice_id: id, stock_bags: stock, updated_at: new Date().toISOString() })
+    .select();
+
+  if (priceSave.error || stockSave.error || priceSave.data.length === 0) {
+    button.disabled = false;
+    status.textContent = "Not saved. Check you're still signed in, then try again.";
+    return;
+  }
+
+  RICE.find(r => r.id === id).price = price;
+  STOCK[id] = stock;
+  update();
+  const newStatus = document.getElementById(`status-${id}`);
+  if (newStatus) newStatus.textContent = "Saved";
+});
+
+/* ---------- Sign in and out ---------- */
+const loginDialog = document.getElementById("login");
+const loginError = document.getElementById("login-error");
+
+document.getElementById("admin-link").addEventListener("click", () => {
+  loginError.hidden = true;
+  if (!db) {
+    loginError.textContent = "Admin sign in works once the page is connected to Supabase.";
+    loginError.hidden = false;
+  }
+  loginDialog.showModal();
+});
+document.getElementById("login-cancel").addEventListener("click", () => loginDialog.close());
+
+document.getElementById("login-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!db) return;
+  const submit = document.getElementById("login-submit");
+  submit.disabled = true;
+  loginError.hidden = true;
+
+  const { error } = await db.auth.signInWithPassword({
+    email: document.getElementById("login-email").value,
+    password: document.getElementById("login-password").value
+  });
+  submit.disabled = false;
+
+  if (error) {
+    loginError.textContent = "That email and password didn't match. Check them and try again.";
+    loginError.hidden = false;
+    return;
+  }
+  await checkAdmin();
+  if (!isAdmin) {
+    loginError.textContent = "You're signed in, but this account isn't on the admin list.";
+    loginError.hidden = false;
+    await db.auth.signOut();
+    return;
+  }
+  loginDialog.close();
+  document.getElementById("login-password").value = "";
+  showAdminUI();
+  update();
+});
+
+document.getElementById("sign-out").addEventListener("click", async () => {
+  await db.auth.signOut();
+  isAdmin = false;
+  STOCK = {};
+  showAdminUI();
+  update();
+});
+
+/* ---------- Start ---------- */
+(async function start() {
+  await loadRice();
+  await checkAdmin();
+  showAdminUI();
+  update();
+})();
+</script>
+</body>
+</html>
