@@ -144,6 +144,52 @@
   .promise h3 { font-size: 1.15rem; margin: 0 0 .4rem; }
   .promise p { margin: 0; color: var(--muted); }
 
+  /* ---------- Sign-in gate: nothing shows until you're signed in ---------- */
+  html:not(.signed-in) body > :not(#gate):not(script) { display: none !important; }
+  [hidden] { display: none !important; }
+  .gate {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.25rem;
+    background-color: #C8A874;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(90,65,30,.18) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(90,65,30,.14) 0 1px, transparent 1px 4px);
+  }
+  .gate-card {
+    width: min(24rem, 100%);
+    background: var(--card); color: var(--ink);
+    border-top: 3px dashed var(--jute-dark);
+    border-radius: 0 0 3px 3px;
+    padding: 1.75rem 1.5rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(40, 30, 10, .3);
+  }
+  .gate-mark {
+    font-family: "Stardos Stencil", "Courier New", monospace; font-weight: 700;
+    font-size: 3.25rem; line-height: .9; letter-spacing: .04em;
+    color: var(--stamp); margin: 0 0 .5rem;
+  }
+  .gate-note { color: var(--muted); margin: 0 0 1.25rem; }
+  .gate-card label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: .9rem; }
+  .gate-card input {
+    display: block; width: 100%; margin-top: .3rem; font: inherit; color: var(--ink);
+    background: var(--page); border: 1px solid var(--line); border-radius: 3px; padding: .55rem .65rem;
+  }
+  .gate-card button {
+    font: inherit; font-weight: 600; cursor: pointer; width: 100%; margin-top: .25rem;
+    background: var(--stamp); color: var(--card); border: 2px solid var(--stamp);
+    border-radius: 3px; padding: .6rem 1rem;
+  }
+  .gate-card button:disabled { opacity: .6; cursor: default; }
+  .gate-card input:focus-visible, .gate-card button:focus-visible { outline: 3px solid var(--stamp); outline-offset: 2px; }
+  .gate-error { color: var(--price); font-size: .92rem; margin: 0 0 .9rem; }
+  .nav-button {
+    font: inherit; font-weight: 600; background: none; border: 0; padding: 0 0 .1rem; cursor: pointer;
+    color: #1F3A68; border-bottom: 2px solid transparent;
+  }
+  .nav-button:hover { border-bottom-color: #1F3A68; }
+  .nav-button:focus-visible { outline: 3px solid var(--price); outline-offset: 3px; }
+
   footer {
     max-width: 70rem; margin: 0 auto; padding: 1.5rem 1.25rem 2.5rem;
     border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem;
@@ -152,10 +198,22 @@
 </head>
 <body>
 
+<div class="gate" id="gate" hidden>
+  <form class="gate-card" id="gate-form">
+    <p class="gate-mark">SACKED</p>
+    <p class="gate-note">Private preview. Sign in to continue.</p>
+    <p class="gate-error" id="gate-error" hidden></p>
+    <label>Email <input type="email" id="gate-email" autocomplete="username" required></label>
+    <label>Password <input type="password" id="gate-password" autocomplete="current-password" required></label>
+    <button type="submit" id="gate-submit">Sign in</button>
+  </form>
+</div>
+
 <nav class="topnav" aria-label="Main">
   <div class="topnav-inner">
     <a href="index.html" aria-current="page">Home</a>
     <a href="shop.html">Shop the rice</a>
+    <button type="button" class="nav-button" id="sign-out">Sign out</button>
   </div>
 </nav>
 
@@ -197,6 +255,67 @@
 <footer>
   Sacked is a practice project.
 </footer>
+
+<!-- Supabase's JavaScript library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<script>
+/* ---------- Your Supabase details (same as on the shop page) ---------- */
+const SUPABASE_URL = "https://bvidualhukgrpiozektw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_XBw3J5N4bv3BpymDmKqp3Q_cUoiYUO7";
+const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+/* ---------- Sign-in gate ----------
+   Shows the sign-in box until you're signed in, then calls onUnlock().
+   The database rules are what really protect the rice list: without a
+   sign-in, Supabase won't send it. */
+async function initGate(onUnlock) {
+  const gate = document.getElementById("gate");
+  const error = document.getElementById("gate-error");
+  const unlock = async () => {
+    gate.hidden = true;
+    document.documentElement.classList.add("signed-in");
+    await onUnlock();
+  };
+
+  if (!db) {
+    gate.hidden = false;
+    error.textContent = "Couldn't connect to Supabase. Check the URL and key at the top of the script.";
+    error.hidden = false;
+    return;
+  }
+
+  const { data } = await db.auth.getSession();
+  if (data.session) { await unlock(); return; }
+
+  gate.hidden = false;
+  document.getElementById("gate-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = document.getElementById("gate-submit");
+    submit.disabled = true;
+    error.hidden = true;
+    const { error: signInError } = await db.auth.signInWithPassword({
+      email: document.getElementById("gate-email").value,
+      password: document.getElementById("gate-password").value
+    });
+    submit.disabled = false;
+    if (signInError) {
+      error.textContent = "That email and password didn't match. Check them and try again.";
+      error.hidden = false;
+      return;
+    }
+    document.getElementById("gate-password").value = "";
+    await unlock();
+  });
+}
+
+document.getElementById("sign-out").addEventListener("click", async () => {
+  await db.auth.signOut();
+  location.reload();
+});
+
+initGate(() => {});   // the home page has nothing extra to load
+</script>
 
 <script>
 /* ---------- Draws the rice field: sky, hills and terraced paddies ---------- */
