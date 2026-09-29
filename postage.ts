@@ -83,13 +83,29 @@ Deno.serve(async (req) => {
       return reply({ error: "Couldn't get postage prices. " + why }, 502);
     }
 
-    // 5. Tidy the answer into a simple list, cheapest first
-    let list = data.services?.service ?? [];
+    // 5. Tidy the answer into a simple list, cheapest first.
+    //    Australia Post also lists its own prepaid satchels and boxes
+    //    ("Large satchel", "Extra large"). We pack in our own box, so we
+    //    only offer the two main services: Parcel Post and Express Post.
+    type Service = { code: string; name: string; price: string };
+    let list: Service[] = data.services?.service ?? [];
     if (!Array.isArray(list)) list = [list];
-    const options = list
-      .map((s: { code: string; name: string; price: string }) => ({ code: s.code, name: s.name, price: Number(s.price) }))
-      .filter((o: { price: number }) => o.price > 0)
-      .sort((a: { price: number }, b: { price: number }) => a.price - b.price);
+
+    const speed = (code: string) => (code.includes("EXPRESS") ? "Express Post" : "Parcel Post");
+    const MAIN = ["AUS_PARCEL_REGULAR", "AUS_PARCEL_EXPRESS"];
+
+    let chosen = list.filter((s) => MAIN.includes(s.code));
+    let options = chosen.map((s) => ({ code: s.code, name: speed(s.code), price: Number(s.price) }));
+
+    // Fallback: if the main two aren't there, show everything, clearly labelled
+    if (options.length === 0) {
+      options = list.map((s) => ({
+        code: s.code,
+        name: s.name === speed(s.code) ? s.name : `${speed(s.code)} – ${s.name}`,
+        price: Number(s.price),
+      }));
+    }
+    options = options.filter((o) => o.price > 0).sort((a, b) => a.price - b.price);
 
     if (options.length === 0) return reply({ error: "Australia Post had no services for that address and weight." }, 404);
     return reply({ postcode: String(postcode), weight_kg: kg, options });
